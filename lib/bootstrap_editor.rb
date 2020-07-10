@@ -1,12 +1,13 @@
 
 require 'hyper-component'
+require 'hyper-router'
+require 'hyper-state'
 Hyperstack.import 'bootstrap_editor'
 
 if RUBY_ENGINE == 'opal'
 
   module BootstrapEditor
   end
-
   require 'bootstrap_editor/hyper_component'
   require 'bootstrap_editor/editor'
   require 'bootstrap_editor/input'

@@ -17,5 +17,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency 'hyper-component', '= 1.0.alpha1.5'
+  spec.add_dependency 'hyper-router', '= 1.0.alpha1.5'
+  spec.add_dependency 'hyper-state', '= 1.0.alpha1.5'
 
 end
