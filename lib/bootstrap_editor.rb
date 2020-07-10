@@ -2,6 +2,7 @@
 require 'hyper-component'
 require 'hyper-router'
 require 'hyper-state'
+require 'bootstrap'
 Hyperstack.import 'bootstrap_editor'
 
 if RUBY_ENGINE == 'opal'
@@ -15,6 +16,7 @@ if RUBY_ENGINE == 'opal'
   require 'bootstrap_editor/preview'
   require 'bootstrap_editor/app'
   require 'bootstrap_editor/variables_panel'
+  require 'bootstrap_editor/sass'
 else
   require 'opal'
   Opal.append_path(File.expand_path('../', __FILE__).untaint)

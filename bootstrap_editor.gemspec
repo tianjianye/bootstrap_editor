@@ -12,12 +12,14 @@ Gem::Specification.new do |spec|
     'lib/bootstrap_editor/error_message.rb',
     'lib/bootstrap_editor/preview.rb',
     'lib/bootstrap_editor/app.rb',
-    'lib/bootstrap_editor/variables_panel.rb'
+    'lib/bootstrap_editor/variables_panel.rb',
+    'lib/bootstrap_editor/sass.rb'
    ]
   spec.require_paths = ["lib"]
 
-  spec.add_dependency 'hyper-component', '= 1.0.alpha1.5'
-  spec.add_dependency 'hyper-router', '= 1.0.alpha1.5'
-  spec.add_dependency 'hyper-state', '= 1.0.alpha1.5'
+  spec.add_runtime_dependency 'hyper-component', '= 1.0.alpha1.5'
+  spec.add_runtime_dependency 'hyper-router', '= 1.0.alpha1.5'
+  spec.add_runtime_dependency 'hyper-state', '= 1.0.alpha1.5'
+  spec.add_runtime_dependency 'bootstrap', '~> 4.5'
 
 end
