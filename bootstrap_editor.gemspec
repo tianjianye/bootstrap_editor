@@ -9,6 +9,10 @@ Gem::Specification.new do |spec|
     'lib/bootstrap_editor/hyper_component.rb',
     'lib/bootstrap_editor/input.rb',
     'lib/bootstrap_editor/editor.rb',
+    'lib/bootstrap_editor/error_message.rb',
+    'lib/bootstrap_editor/preview.rb',
+    'lib/bootstrap_editor/app.rb',
+    'lib/bootstrap_editor/variables_panel.rb'
    ]
   spec.require_paths = ["lib"]
 
