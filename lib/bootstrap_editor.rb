@@ -1,4 +1,3 @@
-
 require 'hyper-component'
 require 'hyper-router'
 require 'hyper-state'
@@ -17,7 +16,15 @@ if RUBY_ENGINE == 'opal'
   require 'bootstrap_editor/app'
   require 'bootstrap_editor/variables_panel'
   require 'bootstrap_editor/sass'
+  require 'assets/javascripts/sass.js'
+  require 'assets/javascripts/sass.worker.js'
 else
+  module BootstrapEditor
+    module Rails
+      class Engine < ::Rails::Engine
+      end
+    end
+  end
   require 'opal'
   Opal.append_path(File.expand_path('../', __FILE__).untaint)
 end
