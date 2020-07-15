@@ -3,7 +3,7 @@ return unless RUBY_ENGINE == 'opal'
 module BootstrapEditor
   class ErrorMessage < HyperComponent
     render(DIV, class: 'error_message') do
-      DIV(class: 'toast position-absolute', role: 'alert', 'data-delay':'3000', style:{'top': '0', 'right': '25%','display': 'none'}) do
+      DIV(class: 'toast position-absolute', role: 'alert', 'data-delay':'3000', style:{'top': '0', 'right': '25%','display': 'none','zIndex': '2'}) do
         DIV(class: 'toast-header text-danger', style:{'fontSize': '1.3em'}) do
           I(class: 'fas fa-exclamation-triangle mr-3')
           STRONG(class: 'mr-auto'){"SASS Error: "}

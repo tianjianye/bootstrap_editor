@@ -20,9 +20,7 @@ Gem::Specification.new do |spec|
   #   'lib/assets/javascripts/sass.worker.js',
   #   'lib/assets/stylesheets/bootstrap_editor.scss'
   #  ]
-  spec.files = Dir[
-    'lib/**/*'
-  ]
+  spec.files = Dir['lib/**/*']
   spec.require_paths = ["lib"]
 
   spec.add_dependency 'hyper-component', '= 1.0.alpha1.5'

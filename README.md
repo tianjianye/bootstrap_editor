@@ -1,4 +1,11 @@
 # Bootstrap Editor Gem
+
+## Pre-Requisites
+
+* Rails 5.x
+* Yarn
+* Environment Linux
+
 ## Installation
 
 ### Ruby on Rails
@@ -28,6 +35,8 @@ And import `popper` before `turbolinks`:
 @import 'font-awesome';
 ```
 
+* add SCSS files `default_variable.scss`, `flat_bootstrap.scss` and `functions.scss` in the folder `public`
+
 * add node modules with yarn:
 ```console
 yarn add scss-parser
@@ -51,3 +60,7 @@ global.lodash = lodash;
 global.SketchPicker = SketchPicker;
 global.download = downloadjs;
 ```
+
+## Usage
+
+* You can use `BootstrapEditor::Editor()` in a hyperstack project to add the editor

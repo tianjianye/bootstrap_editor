@@ -16,8 +16,8 @@ if RUBY_ENGINE == 'opal'
   require 'bootstrap_editor/app'
   require 'bootstrap_editor/variables_panel'
   require 'bootstrap_editor/sass'
-  require 'assets/javascripts/sass.js'
-  require 'assets/javascripts/sass.worker.js'
+  require 'sass.js'
+  require 'sass.worker.js'
 else
   module BootstrapEditor
     module Rails

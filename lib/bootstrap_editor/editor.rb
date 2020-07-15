@@ -8,7 +8,7 @@ module BootstrapEditor
     render do
       DIV(class: 'mh-100',style: { display:'grid', 'gridTemplateRows': '5fr 95fr', 'gridTemplateColumns': '9fr 3fr' } ) do
         header
-        BootstrapEditor::Preview()
+        BootstrapEditor::Preview(path_preview: './assets/preview.html')
         variable_panel
         loader
         BootstrapEditor::ErrorMessage()
