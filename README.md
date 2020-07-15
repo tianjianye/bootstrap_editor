@@ -5,5 +5,7 @@
 
 * Add bootstrap_editor to your Gemfile:
 ```
-gem 'bootstrap_editor', '~> 4.5.0'
+gem 'bootstrap_editor'
 ```
+
+* Then `bundle install` and restart your server to make the files available through the pipeline.

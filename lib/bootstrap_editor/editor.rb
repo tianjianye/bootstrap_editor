@@ -6,7 +6,7 @@ module BootstrapEditor
 
     CLIENT_SIDE_COMPILATION = true
     render do
-      DIV(class: 'vh-100',style: { display:'grid', 'gridTemplateRows': '5fr 95fr', 'gridTemplateColumns': '9fr 3fr' } ) do
+      DIV(class: 'mh-100',style: { display:'grid', 'gridTemplateRows': '5fr 95fr', 'gridTemplateColumns': '9fr 3fr' } ) do
         header
         BootstrapEditor::Preview()
         variable_panel
