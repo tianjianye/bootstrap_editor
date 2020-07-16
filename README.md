@@ -10,22 +10,20 @@
 
 ### Ruby on Rails
 
-* Add bootstrap_editor to your Gemfile:
+* Add `bootstrap_editor`, `bootstrap` and  `font-awesome-sass` gems to your Gemfile:
 ```ruby
 gem 'bootstrap_editor'
+gem 'bootstrap'
+gem 'font-awesome-sass'
 ```
 
 * Then `bundle install` and restart your server to make the files available through the pipeline.
 
-* Import `bootstrap_editor` in `app/assets/javascript/application.js`:
-```js
-//= require bootstrap_editor
-```
-
-And import `popper` before `turbolinks`:
+* Add `popper`, `bootstrap-sprockets` and `bootstrap_editor` in `app/assets/javascript/application.js`:
 ```js
 //= require popper
-//= require turbolinks
+//= require bootstrap-sprockets
+//= require bootstrap_editor
 ```
 
 * Import bootstrap and font-awesome in `app/assets/stylesheets/application.scss`:
@@ -34,8 +32,6 @@ And import `popper` before `turbolinks`:
 @import 'font-awesome-sprockets';
 @import 'font-awesome';
 ```
-
-* add SCSS files `default_variable.scss`, `flat_bootstrap.scss` and `functions.scss` in the folder `public`
 
 * add node modules with yarn:
 ```console

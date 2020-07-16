@@ -8,7 +8,7 @@ module BootstrapEditor
     render() {content}
     def content
       unless variable_array.nil?
-        DIV(class:'col', style:{'gridColumn':'2','gridRow':'2',overflowY: 'auto'}) do
+        DIV(class:'col overflow-auto', style:{'gridColumn':'2','gridRow':'2'}) do
           FORM do
             variable_array.each do |variable|
               BootstrapEditor::Input(variable: variable)
