@@ -51,14 +51,14 @@ module BootstrapEditor
         mutate variable['value'] = evt.target.value
         value_changed!(variable)
       end
-      DIV(class:"position-absolute",style: {"zIndex": "1"}) do
+      DIV(class:"position-absolute",style: {top: '2.4rem', "zIndex": "1"}) do
         sketch_color_picker(variable)
       end if @show
     end
 
 
     def sketch_color_picker(variable)
-      DIV(style:{position: "fixed", top: "0px", right: "0px", bottom: "0px", left: "0px"})
+      DIV(class: "fixed-top fixed-bottom",style: {"zIndex": "0"})
       .on(:click) do
         mutate @show = false
       end

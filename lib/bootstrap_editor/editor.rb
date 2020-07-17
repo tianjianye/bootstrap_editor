@@ -5,7 +5,15 @@ module BootstrapEditor
     include Hyperstack::Router::Helpers
 
     CLIENT_SIDE_COMPILATION = true
+    param :reset_state, default: false
+    param :save_state, default: false
+    fires :reset_done
+    fires :save_done
     render do
+      if reset_state
+        reset_event
+        !reset_done!
+      end
       DIV(class: 'mh-100',style: { display:'grid', 'gridTemplateRows': '5fr 95fr', 'gridTemplateColumns': '9fr 3fr' } ) do
         header
         BootstrapEditor::Preview(path_preview: '/bootstrap_editor_preview.html')
@@ -19,91 +27,36 @@ module BootstrapEditor
       init
     end
 
+
+    def variable_file_event(result)
+      @import_variable_file = result
+      update_variables(@import_variable_file)
+      mutate
+      compile_css(initial: false)
+    end
+
+    def custom_file_event(result)
+      @custom_file = result
+      compile_css(initial: false)
+    end
+
+    def reset_event
+      show_loader
+      initial_variables
+      update_preview(@default_css_string)
+      hide_loader
+    end
+
     # components
-    def header
-      DIV(class:"d-flex pl-3 pr-3 mb-2 mt-2",style:{"gridColumnStart":"1","gridColumnEnd":"3"}) do
-        input_variable_file
-        input_custom_file
-        download
-        spacer
-        reset
-      end
-    end
-
-    def input_variable_file
-      DIV(class:'input-group w-auto mr-1') do
-        DIV(class:'custom-file') do
-          INPUT(type: :file, class: 'custom-file-input', id:"fileVariable").on(:change) do |evt|
-            @file = evt.target.files[0]
-            unless @file.nil?
-              @file_content = @file.text()
-              @file_content.then{|result|
-                @import_variable_file = result
-                update_variables
-                mutate
-                compile_css(initial: false)
-              }
-            end
-          end
-          LABEL(class:"custom-file-label", htmlFor:'fileVariable'){"Variable File"}
-        end
-      end
-
-    end
-
-    def input_custom_file
-
-      DIV(class:'input-group mr-1 w-auto') do
-        DIV(class:'custom-file') do
-          INPUT(type: :file,class: 'custom-file-input', id:"fileCustom").on(:change) do |evt|
-            @file = evt.target.files[0]
-            unless @file.nil?
-              @file_content = @file.text()
-              @file_content.then{|result|
-                @custom_file = result
-                compile_css(initial: false)
-              }
-            end
-          end
-          LABEL(class:"custom-file-label", htmlFor:'fileCustom'){"Custom File"}
-        end
-      end
-    end
-
-    def reset
-      DIV(class:"mr-1") do
-        BUTTON(class:'btn btn-danger'){"Reset"}.on(:click) do
-          show_loader
-          initial_variables
-          update_preview(@default_css_string)
-          hide_loader
-        end
-      end
-    end
-
-    def spacer
-      DIV(class:"flex-grow-1") do
-
-      end
-    end
-
-    def download
-      DIV(class:"mr-1") do
-        BUTTON(type: :button,class:"btn btn-outline-primary dropdown-toggle",'data-toggle':"dropdown",'aria-haspopup':"true",'aria-expanded':"false"){"Download"}
-        DIV(class:"dropdown-menu"){
-          A(class:"dropdown-item",href:"#"){"bootstrap.css"}.on(:click) do |evt|
-            evt.prevent_default
-            `download(#{@css_string}, "bootstrap.css", "text/plain");`
-          end
-          A(class:"dropdown-item",href:"#"){"variable.scss"}.on(:click) do |evt|
-            evt.prevent_default
-            `download(#{@export_variable_file}, "variable.scss", "text/plain");`
-          end
-          A(class:"dropdown-item",href:"#"){"custom.scss"}.on(:click) do |evt|
-            evt.prevent_default
-            `download(#{@custom_file}, "custom.scss", "text/plain");`
-          end
-        }
+    def header(variable_array)
+      BootstrapEditor::Header(variable_array: variable_array,css_string: @css_string, export_variable_file: @export_variable_file, custom_file: @custom_file)
+      .on(:variable_file_changed) do |result|
+        variable_file_event(result)
+      end.on(:custom_file_changed) do |variable|
+        custom_file_event(result)
+      end.on(:reset_event) do
+        reset_event
+        mutate @reset = false
       end
     end
 
@@ -143,9 +96,9 @@ module BootstrapEditor
       end
     end
 
-    def update_variables
+    def update_variables(import_variable_file)
       # write import variable file into variable file
-      @import_variable_array = Sass.parse(@import_variable_file).find_declaration_variables
+      @import_variable_array = Sass.parse(import_variable_file).find_declaration_variables
       @import_variable_array.each do |item|
 
         if @default_variable_array.map {|x| x.values[1]}.uniq.include?(item['name'])
