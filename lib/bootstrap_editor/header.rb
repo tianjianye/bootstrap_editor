@@ -2,9 +2,8 @@ return unless RUBY_ENGINE == 'opal'
 
 module BootstrapEditor
   class Header < HyperComponent
-    param :variable_array
     param :css_string
-    param :export_variable_file
+    param :ast
     param :custom_file
     fires :variable_file_changed
     fires :custom_file_changed
@@ -14,7 +13,7 @@ module BootstrapEditor
       DIV(class:"d-flex pl-3 pr-3 mb-2 mt-2",style:{"gridColumnStart":"1","gridColumnEnd":"3"}) do
         input_variable_file
         input_custom_file
-        download(css_string, export_variable_file, custom_file)
+        download(css_string, ast.find_changed_value, custom_file) unless ast.nil?
         spacer
         reset
       end
@@ -68,11 +67,11 @@ module BootstrapEditor
       end
     end
 
-    def download(css_string, export_variable_file, custom_file)
+    def download(css_string, variable_file_to_export, custom_file)
       @file_list =
       [
         {'name' => 'bootstrap.css','content' => css_string.to_s},
-        {'name' => 'variable.scss','content' => export_variable_file.to_s},
+        {'name' => 'variable.scss','content' => variable_file_to_export.to_s},
         {'name' => 'custom.scss','content' => custom_file.to_s}
       ]
       DIV(class:"mr-1") do

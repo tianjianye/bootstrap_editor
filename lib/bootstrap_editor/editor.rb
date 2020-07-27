@@ -5,14 +5,16 @@ module BootstrapEditor
     include Hyperstack::Router::Helpers
 
     CLIENT_SIDE_COMPILATION = true
-    param :reset_state, default: false
-    param :save_state, default: false
+    param :variable_file, default: ""
+    param :custom_file, default: ""
+    param :reset, default: false
     fires :reset_done
-    fires :save_done
+    fires :changed
+
     render do
-      if reset_state
+      if reset
         reset_event
-        !reset_done!
+        reset_done!
       end
       DIV(class: 'mh-100',style: { display:'grid', 'gridTemplateRows': '5fr 95fr', 'gridTemplateColumns': '9fr 3fr' } ) do
         header
@@ -23,21 +25,14 @@ module BootstrapEditor
       end
     end
 
-    after_mount do
-      init
-    end
+    # after_mount do
+    #   init
+    # end
 
-
-    def variable_file_event(result)
-      @import_variable_file = result
-      update_variables(@import_variable_file)
-      mutate
-      compile_css(initial: false)
-    end
-
-    def custom_file_event(result)
-      @custom_file = result
-      compile_css(initial: false)
+    before_receive_props do |next_props|
+      if next_props['variable_file'] != variable_file || next_props['custom_file'] == custom_file
+        init
+      end
     end
 
     def reset_event
@@ -48,32 +43,40 @@ module BootstrapEditor
     end
 
     # components
-    def header(variable_array)
-      BootstrapEditor::Header(variable_array: variable_array,css_string: @css_string, export_variable_file: @export_variable_file, custom_file: @custom_file)
+    def header
+      BootstrapEditor::Header(css_string: @css_string, ast: @ast, custom_file: custom_file)
       .on(:variable_file_changed) do |result|
-        variable_file_event(result)
-      end.on(:custom_file_changed) do |variable|
-        custom_file_event(result)
-      end.on(:reset_event) do
+        update_variables(result)
+        compile_css(initial: false, variable_file: @ast.stringify, custom_file: custom_file)
+        @variable_array = @ast.find_declaration_variables
+        changed!(@ast, custom_file)
+      end.on(:custom_file_changed) do |result|
+        custom_file = result
+        compile_css(initial: false, variable_file: @ast.stringify, custom_file: custom_file)
+        changed!(@ast, custom_file)
+      end.on(:reset_variable) do
         reset_event
         mutate @reset = false
       end
     end
 
     def variable_panel
-      BootstrapEditor::VariablePanel(variable_array: @variable_array).on(:variable_changed) do |variable|
+      BootstrapEditor::VariablePanel(variable_array: @variable_array)
+      .on(:variable_changed) do |variable|
         change_variable_value(variable)
+        changed!(@ast, custom_file)
       end.on(:type_changed) do |variable|
         change_variable_type(variable)
+        changed!(@ast, custom_file)
       end
     end
+
     def loader
       DIV(id: 'loader', class: 'spinner-border position-absolute',style:{ display: "none", top: "50%", left: "50%", width: "6em", height: "6em" }) do
         SPAN(class: 'sr-only') do
         end
       end
     end
-
 
     # methods
     def init
@@ -89,16 +92,22 @@ module BootstrapEditor
             @ast = @default_variable_ast.duplicate
             @default_variable_array = @default_variable_ast.find_declaration_variables
             initial_variables
-            compile_css(initial: true)
+            if custom_file.empty? && variable_file.empty?
+              compile_css(initial: true)
+            else
+              update_variables(variable_file)
+              compile_css(initial: false, variable_file: @ast.stringify, custom_file: custom_file)
+              @variable_array = @ast.find_declaration_variables
+            end
             mutate
           end
         end
       end
     end
 
-    def update_variables(import_variable_file)
+    def update_variables(variable_file_to_import)
       # write import variable file into variable file
-      @import_variable_array = Sass.parse(import_variable_file).find_declaration_variables
+      @import_variable_array = Sass.parse(variable_file_to_import).find_declaration_variables
       @import_variable_array.each do |item|
 
         if @default_variable_array.map {|x| x.values[1]}.uniq.include?(item['name'])
@@ -124,9 +133,6 @@ module BootstrapEditor
           @ast.add(item,@new_variable_array.index(item))
         end
       end
-      @variable_file = @ast.stringify
-      @export_variable_file = @ast.find_changed_value
-      @variable_array = @ast.find_declaration_variables
     end
 
     def remove_duplicate(array)
@@ -144,12 +150,10 @@ module BootstrapEditor
       @timer = after(1) do
         # add the changed value to variable file
         @ast.replace(variable)
-        @variable_file = @ast.stringify
-        @export_variable_file = @ast.find_changed_value
         target = @variable_array.find {|x| x['name'] == variable['name']}
         target['value'] = variable['value']
         target['unit'] = variable['unit']
-        compile_css(initial: false)
+        compile_css(initial: false, variable_file: @ast.stringify, custom_file: custom_file)
         @timer = nil
       end
     end
@@ -163,19 +167,13 @@ module BootstrapEditor
     end
 
     def initial_variables
-      # init custom file and variable file
-      @custom_file = ""
-      @import_variable_file = ""
-      @export_variable_file = ""
-      # array to stock all the variables changed
       @ast = @default_variable_ast.duplicate
       ::Element.find('#fileVariable').val("")
       ::Element.find('#fileCustom').val("")
-      # init ast and array
       @variable_array = clone_deep(@default_variable_array)
       @old_variable_array = []
       @new_variable_array = []
-      mutate
+
     end
 
     def clone_deep(object)
@@ -189,7 +187,7 @@ module BootstrapEditor
       if options[:initial]
         @combinaison = @functions.to_s + "\n"+ @default_variable_file.to_s + "\n" + @bootstrap.to_s + "\n"
       else
-        @combinaison = @functions.to_s + "\n"+ @variable_file.to_s + "\n" + @bootstrap.to_s + "\n" + @custom_file.to_s + "\n"
+        @combinaison = @functions.to_s + "\n"+ options[:variable_file].to_s + "\n" + @bootstrap.to_s + "\n" + options[:custom_file].to_s + "\n"
       end
       after(0) do
         if CLIENT_SIDE_COMPILATION
