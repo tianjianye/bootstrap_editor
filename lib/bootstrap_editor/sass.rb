@@ -30,8 +30,9 @@ class Sass
     def find_declaration_variables
       # find all variables of declarations
       `
+      ast = #{@native};
       array = [];
-      query = createQueryWrapper(#{@native});
+      query = createQueryWrapper(ast);
       declarations =  query().children('declaration');
       for(i = 0; i<declarations.length(); i++){
         declaration = declarations.eq(i);
@@ -98,34 +99,42 @@ class Sass
     end
 
     def add(variable,index)
-      `query = createQueryWrapper(#{@native});
-      new_value_ast = parse(#{variable['name']} + ": " + #{variable['value']} + #{variable['unit']}+";\n");
-      query().children('declaration').eq(#{index}).before(new_value_ast.value[1]);
-      query().children('declaration').eq(#{index}).prev().before(new_value_ast.value[0]);
-      #{@native} = query().get(0);
       `
+      ast = #{@native}
+      variable = #{variable}
+      index = #{index}
+      query = createQueryWrapper(ast);
+      new_value_ast = parse(variable.name + ": " + variable.value + variable.unit +";\n");
+      query().children('declaration').eq(index).before(new_value_ast.value[1]);
+      query().children('declaration').eq(index).prev().before(new_value_ast.value[0]);
+      ast = query().get(0);
+      `
+      @native = `ast`
     end
 
     def replace(variable)
-      `query = createQueryWrapper(#{@native});
-
+      `
+      ast = #{@native}
+      variable = #{variable};
+      query = createQueryWrapper(ast);
       // find declaration of the variable changed
-      target = query().children('declaration').filter((n)=>stringify(query(n).children('property').get(0)) === #{variable['name']});
-
+      target = query().children('declaration').filter((n)=>stringify(query(n).children('property').get(0)) === variable.name);
       // replace the value
       if(target.length() !== 0){
-        new_value_ast = parse(' '+#{variable['value']}+#{variable['unit']});
+        new_value_ast = parse(' ' + variable.value + variable.unit);
         target.children('value').first().replace((n)=>{
           return {type: 'value', value: new_value_ast.value}
         });
       }
-      #{@native} = query().get(0);
+      ast = query().get(0);
       `
+      @native = `ast`
     end
 
     def find_changed_value
       `
-      query = createQueryWrapper(#{@native});
+      ast = #{@native}
+      query = createQueryWrapper(ast);
       declarations =  query().children('declaration');
       targets = declarations.filter((n)=>stringify(query(n).children('value').get(0)).indexOf('default') == -1);
       string = "";
