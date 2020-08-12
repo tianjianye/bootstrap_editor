@@ -59,18 +59,21 @@ global.download = downloadjs;
 
 ## Usage
 
-* You can use `BootstrapEditor::Editor()` in a hyperstack project to add the editor but it's necessary to fix the height of the editor, for example:
+* You can use `BootstrapEditor::Editor` with parameters variable_file, custom_file and reset in a hyperstack project to add the editor:
+
+```
+variable_file: string; # default value is empty string
+custom_file: string; # default value is empty string
+reset: boolean; # default value is false, if reset is true, the style of the editor will be reset
+```
+but it's necessary to fix the height of the editor, for example:
 ```ruby
 DIV(style: {height: 'calc(100vh)'}) do
-  BootstrapEditor::Editor()
+  BootstrapEditor::Editor(reset: false, custom_file: "", variable_file: "$white: #823838")
 end
 ```
-You can also use it with parameters variable_file, custom_file and reset:
-```ruby
-variable_file: string;
-custom_file: string;
-reset: boolean;
-```
+
+* You can also use it without parameters, for example:
 ```ruby
 DIV(style: {height: 'calc(100vh)'}) do
   BootstrapEditor::Editor()
