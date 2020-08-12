@@ -25,12 +25,9 @@ module BootstrapEditor
       end
     end
 
-    # after_mount do
-    #   init
-    # end
-
     before_receive_props do |next_props|
-      if next_props['variable_file'] != variable_file || next_props['custom_file'] == custom_file
+      puts next_props
+      if next_props['variable_file'] != variable_file || next_props['custom_file'] != custom_file
         init
       end
     end

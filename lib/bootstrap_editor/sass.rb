@@ -30,9 +30,8 @@ class Sass
     def find_declaration_variables
       # find all variables of declarations
       `
-      ast = #{@native};
       array = [];
-      query = createQueryWrapper(ast);
+      query = createQueryWrapper(#{@native});
       declarations =  query().children('declaration');
       for(i = 0; i<declarations.length(); i++){
         declaration = declarations.eq(i);
@@ -100,23 +99,20 @@ class Sass
 
     def add(variable,index)
       `
-      ast = #{@native}
-      variable = #{variable}
+      variable = JSON.parse(#{variable.to_json});
       index = #{index}
-      query = createQueryWrapper(ast);
+      query = createQueryWrapper(#{@native});
       new_value_ast = parse(variable.name + ": " + variable.value + variable.unit +";\n");
       query().children('declaration').eq(index).before(new_value_ast.value[1]);
       query().children('declaration').eq(index).prev().before(new_value_ast.value[0]);
-      ast = query().get(0);
+      #{@native} = query().get(0);
       `
-      @native = `ast`
     end
 
     def replace(variable)
       `
-      ast = #{@native}
-      variable = #{variable};
-      query = createQueryWrapper(ast);
+      variable = JSON.parse(#{variable.to_json});
+      query = createQueryWrapper(#{@native});
       // find declaration of the variable changed
       target = query().children('declaration').filter((n)=>stringify(query(n).children('property').get(0)) === variable.name);
       // replace the value
@@ -126,9 +122,8 @@ class Sass
           return {type: 'value', value: new_value_ast.value}
         });
       }
-      ast = query().get(0);
+      #{@native} = query().get(0);
       `
-      @native = `ast`
     end
 
     def find_changed_value
