@@ -14,7 +14,6 @@ module BootstrapEditor
     render do
       if reset
         reset_event
-        reset_done!
       end
       DIV(class: 'mh-100',style: { display:'grid', 'gridTemplateRows': '5fr 95fr', 'gridTemplateColumns': '9fr 3fr' } ) do
         header
@@ -38,8 +37,13 @@ module BootstrapEditor
     def reset_event
       show_loader
       initial_variables
+      if @default_css_string.nil?
+        compile_css(initial: true)
+      end
       update_preview(@default_css_string)
       hide_loader
+      custom_file = ""
+      reset_done!(@ast, custom_file)
     end
 
     # components
