@@ -17,10 +17,10 @@ module BootstrapEditor
       end
       DIV(class: 'mh-100',style: { display:'grid', 'gridTemplateRows': '5fr 95fr', 'gridTemplateColumns': '9fr 3fr' } ) do
         header
-        BootstrapEditor::Preview(path_preview: '/bootstrap_editor_preview.html')
+        Preview(path_preview: '/bootstrap_editor_preview.html')
         variable_panel
         loader
-        BootstrapEditor::ErrorMessage()
+        ErrorMessage()
       end
     end
 
@@ -48,7 +48,7 @@ module BootstrapEditor
 
     # components
     def header
-      BootstrapEditor::Header(css_string: @css_string, ast: @ast, custom_file: custom_file)
+      Header(css_string: @css_string, ast: @ast, custom_file: custom_file)
       .on(:variable_file_changed) do |result|
         update_variables(result)
         compile_css(initial: false, variable_file: @ast.stringify, custom_file: custom_file)
@@ -65,7 +65,7 @@ module BootstrapEditor
     end
 
     def variable_panel
-      BootstrapEditor::VariablePanel(variable_array: @variable_array)
+      VariablePanel(variable_array: @variable_array)
       .on(:variable_changed) do |variable|
         change_variable_value(variable)
         changed!(@ast, custom_file)

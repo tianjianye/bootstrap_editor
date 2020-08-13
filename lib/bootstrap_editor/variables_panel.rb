@@ -11,7 +11,7 @@ module BootstrapEditor
         DIV(class:'col overflow-auto', style:{'gridColumn':'2','gridRow':'2'}) do
           FORM do
             variable_array.each do |variable|
-              BootstrapEditor::Input(variable: variable)
+              Input(variable: variable)
               .on(:value_changed) do |parameter|
                 variable_changed!(parameter)
               end
